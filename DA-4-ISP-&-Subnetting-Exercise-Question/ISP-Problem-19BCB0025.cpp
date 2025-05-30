@@ -1,0 +1,87 @@
+//  ISP Problem _ 19BCB0025 - following code is exclusive only to 3 groups and class B site address
+#include<iostream>
+#include<string>
+#include<math.h>
+using namespace std;
+int main()
+{
+    string st_addr;
+    cout<<"\nEnter starting address : ";cin>>st_addr;
+    int suffix = 32 - stoi(st_addr.substr(st_addr.find('/')+1));
+    int ipclass;
+    sscanf(st_addr.data(), "%d", &ipclass);
+    char ipclass1;
+    cout<<"Class is : ";
+    int flag;
+    if (ipclass>=1 && ipclass<=126)
+    {
+            cout<<"A";
+            flag=1;
+    }
+    else if(ipclass>=128 && ipclass<=191)
+    {
+            cout<<"B";
+            flag=2;
+    }
+    else if(ipclass>=192 && ipclass<=223)
+    {
+            cout<<"C";
+            flag=3;
+    }
+    //class has been identified
+    string netid="";
+    int count=0;
+    for(int i=0;i<st_addr.length();i++)
+    {
+        netid += st_addr[i];
+        if(st_addr[i] == '.')
+        {
+            count++;
+            if(count == flag)
+            {
+                break;
+                break;
+            }
+        }
+    }
+    netid.pop_back();
+    cout<<endl<<"Net ID : "<<netid<<endl;
+    cout<<"ISP Suffix : "<<suffix<<endl;
+    int customers[3];
+    int address[3];
+    int bits[3];
+    cout<<"Enter no. of customers required for each group : ";
+    for(int i=0;i<3;i++)
+    {
+        cin>>customers[i];
+    }
+    cout<<"Enter no. of addresses required for each group : ";
+    for(int i=0;i<3;i++)
+    {
+        cin>>address[i];
+        bits[i] = ceil(log(address[i]) / log(2)) ;
+    }
+    int oct3=0;
+    int oct4=0;
+    for(int i=0;i<3;i++)
+    {
+        cout<<"\n-------------------- Group - "<<i+1<<" --------------------\n\nBits needed to define each host : "<<bits[i];
+        cout<<"\nPrefix length = 32 - (bits needed) = "<<(32 - bits[i])<<endl;
+        for(int j=0;j<customers[i];j++)
+        {
+                cout<<"Customer #"<<(j+1)<<" : "<<netid<<"."<<oct3<<"."<<oct4<<"/"<<(32 - bits[i]);
+                oct4 = address[i] - 1 + oct4;
+                cout<<"  to  "<<netid<<"."<<oct3<<"."<<oct4<<"/"<<(32 - bits[i])<<endl;
+                oct4++;
+                if(oct4 > 255)
+                {
+                    oct3++;
+                    oct4=0;
+                }
+        }
+        cout<<"\nTotal addresses allocated for group #"<<i+1<<" = "<<(customers[i]*address[i])<<endl;
+    }
+    cout<<"\nNumber of granted addresses to the ISP = 2 ^ (suffix of site address) = "<<pow(2,suffix);
+    cout<<"\nNumber of allocated addresses by the ISP = sum(allocated address count) = "<<((customers[0]*address[0])+(customers[1]*address[1])+(customers[2]*address[2]));
+    cout<<"\nNumber of available addresses = granted - allocated = "<<(pow(2,suffix) - ((customers[0]*address[0])+(customers[1]*address[1])+(customers[2]*address[2])));
+}
